@@ -1,21 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber Security Quiz</title>
+    <title>Secure N Success Mini Cyber Quiz</title>
+    <!-- Link to Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- Link to CSS -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="quiz-container">
-        <h1>Cyber Security Quiz</h1>
-        <div id="quiz">
-            <!-- Quiz content will be dynamically generated here -->
-        </div>
-        <button id="next-btn" onclick="nextQuestion()">Next Question</button>
+        <h1>Secure N Success Mini Cyber Quiz</h1>
+        <div id="quiz"></div>
+        <button id="next">Next Question</button>
         <div id="result"></div>
     </div>
-    <script src="script.js"></script>
+
+    <!-- JavaScript -->
+    <script>
+        const quizContainer = document.getElementById("quiz");
+        const resultContainer = document.getElementById("result");
+        const nextButton = document.getElementById("next");
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        // Questions Array
+        const questions = [
+            {
+                question: "What does HTTPS stand for?",
+                options: [
+                    "HyperText Transfer Protocol Secure",
+                    "High Transfer Protocol Secure",
+                    "Hyperlink Text Transfer Secure",
+                    "HyperText Transfer Security"
+                ],
+                answer: 0
+            },
+            {
+                question: "Which is a strong password?",
+                options: [
+                    "12345",
+                    "password",
+                    "qwerty",
+                    "T!k3$R@1#"
+                ],
+                answer: 3
+            },
+            {
+                question: "What is phishing?",
+                options: [
+                    "Fishing for data online",
+                    "A type of cyber attack",
+                    "A form of ransomware",
+                    "An encrypted communication method"
+                ],
+                answer: 1
+            }
+        ];
+
+        // Highlight answer logic
+        function highlightAnswer(selected, correctOptionIndex) {
+            const options = document.querySelectorAll(".option");
+            options.forEach((option, index) => {
+                if (index === correctOptionIndex) {
+                    option.classList.add("correct"); // Highlight correct answer in green
+                } else if (option === selected) {
+                    option.classList.add("incorrect"); // Highlight wrong selection in red
+                }
+                option.style.pointerEvents = "none"; // Disable clicks on all options
+            });
+        }
+
+        // Show a question
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            quizContainer.innerHTML = `
+                <div class="question">${question.question}</div>
+                ${question.options
+                    .map(
+                        (option, index) =>
+                            `<div class="option" onclick="checkAnswer(${index})">${option}</div>`
+                    )
+                    .join("")}
+            `;
+        }
+
+        // Check the answer
+        function checkAnswer(selectedOptionIndex) {
+            const question = questions[currentQuestion];
+            const correctOptionIndex = question.answer;
+
+            if (selectedOptionIndex === correctOptionIndex) {
+                score++;
+            }
+            highlightAnswer(
+                document.querySelectorAll(".option")[selectedOptionIndex],
+                correctOptionIndex
+            );
+        }
+
+        // Show next question or final result
+        nextButton.addEventListener("click", () => {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                quizContainer.innerHTML = `<h2>Quiz Over! Your score: ${score}/${questions.length}</h2>`;
+                nextButton.style.display = "none"; // Hide next button
+            }
+        });
+
+        // Start quiz
+        showQuestion();
+    </script>
 </body>
 </html>
