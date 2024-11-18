@@ -1,79 +1,63 @@
-const questions = [
-    {
-        question: "What should you do if you receive an email asking for your password?",
-        options: [
-            "Reply with your password to verify your account.",
-            "Ignore it or report it as phishing.",
-            "Click the link and follow the instructions.",
-            "Forward it to your contacts."
-        ],
-        answer: 1
-    },
-    {
-        question: "What is the safest way to create a password?",
-        options: [
-            "Use your birthdate or name.",
-            "Use a random combination of letters, numbers, and symbols.",
-            "Use the same password for all accounts.",
-            "Write it on a sticky note on your monitor."
-        ],
-        answer: 1
-    },
-    {
-        question: "What does 'HTTPS' in a web address indicate?",
-        options: [
-            "The website is safe and secure.",
-            "The website is free to access.",
-            "The website is fake.",
-            "The website requires a login."
-        ],
-        answer: 0
-    }
-];
+// Select elements
+const quizContainer = document.getElementById("quiz");
+const resultContainer = document.getElementById("result");
+const nextButton = document.getElementById("next");
 
-let currentQuestionIndex = 0;
+let currentQuestion = 0;
 let score = 0;
 
-function loadQuestion() {
-    const quizDiv = document.getElementById("quiz");
-    const question = questions[currentQuestionIndex];
-    quizDiv.innerHTML = `
+// Highlight answer logic
+function highlightAnswer(selected, correctOptionIndex) {
+    const options = document.querySelectorAll(".option");
+    options.forEach((option, index) => {
+        if (index === correctOptionIndex) {
+            option.classList.add("correct"); // Highlight correct answer in green
+        } else if (option === selected) {
+            option.classList.add("incorrect"); // Highlight wrong selection in red
+        }
+        option.classList.remove("hover"); // Disable hover effects
+        option.style.pointerEvents = "none"; // Disable clicks on all options
+    });
+}
+
+// Question logic
+function showQuestion() {
+    const question = questions[currentQuestion];
+    quizContainer.innerHTML = `
         <div class="question">${question.question}</div>
         ${question.options
-            .map((option, index) => `<button class="option" onclick="checkAnswer(${index})">${option}</button>`)
+            .map(
+                (option, index) =>
+                    `<div class="option" onclick="checkAnswer(${index})">${option}</div>`
+            )
             .join("")}
     `;
 }
 
-function checkAnswer(selectedOption) {
-    const question = questions[currentQuestionIndex];
-    const resultDiv = document.getElementById("result");
+// Check the answer
+function checkAnswer(selectedOptionIndex) {
+    const question = questions[currentQuestion];
+    const correctOptionIndex = question.answer;
 
-    if (selectedOption === question.answer) {
+    if (selectedOptionIndex === correctOptionIndex) {
         score++;
-        resultDiv.textContent = "Correct!";
-        resultDiv.style.color = "green";
-    } else {
-        resultDiv.textContent = "Wrong! Try to stay vigilant.";
-        resultDiv.style.color = "red";
     }
-
-    // Disable buttons after answering
-    document.querySelectorAll(".option").forEach(btn => (btn.disabled = true));
+    highlightAnswer(
+        document.querySelectorAll(".option")[selectedOptionIndex],
+        correctOptionIndex
+    );
 }
 
-function nextQuestion() {
-    const resultDiv = document.getElementById("result");
-    resultDiv.textContent = "";
-
-    currentQuestionIndex++;
-    if (currentQuestionIndex < questions.length) {
-        loadQuestion();
+// Show next question
+nextButton.addEventListener("click", () => {
+    currentQuestion++;
+    if (currentQuestion < questions.length) {
+        showQuestion();
     } else {
-        document.getElementById("quiz").innerHTML = `<div>Your score is ${score} out of ${questions.length}!</div>`;
-        document.getElementById("next-btn").style.display = "none";
+        quizContainer.innerHTML = `<h2>Quiz Over! Your score: ${score}/${questions.length}</h2>`;
+        nextButton.style.display = "none"; // Hide next button
     }
-}
+});
 
-// Initialize the quiz
-loadQuestion();
+// Start quiz
+showQuestion();
